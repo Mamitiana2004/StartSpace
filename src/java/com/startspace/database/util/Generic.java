@@ -19,6 +19,7 @@ import java.util.ArrayList;
  * @author mamit
  */
 public class Generic implements InterfaceDAO{
+    
 
     @Override
     public void insert(Entity entity) throws Exception {

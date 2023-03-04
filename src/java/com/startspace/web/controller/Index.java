@@ -5,11 +5,14 @@
  */
 package com.startspace.web.controller;
 
-import com.startspace.database.util.Connect;
 import com.startspace.database.exception.DatabaseFileException;
-import com.startspace.web.util.URLHelper;
+import com.startspace.web.config.FileConfig;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -20,9 +23,15 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author mamit
  */
-@WebServlet(urlPatterns = {"*.star"},name = "FrontServlet")
-public class FrontServlet extends HttpServlet {
-   
+@WebServlet(name = "Index", urlPatterns = {"/"})
+public class Index extends HttpServlet {
+
+    
+    private String route(){
+        ServletContext context=getServletContext();
+        return context.getRealPath("config/routes.star");
+    }
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -33,18 +42,21 @@ public class FrontServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet FrontServlet</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("</body>");
-            out.println("</html>");
+            throws ServletException, IOException, DatabaseFileException {
+        File file=new File(route());
+        String defaultRoute="";
+        boolean find=false;
+        if(file.exists() && !find){
+            defaultRoute=FileConfig.get(file, "default");
+            if(!defaultRoute.equalsIgnoreCase("404")){
+                request.getRequestDispatcher("views/"+defaultRoute+".jsp").forward(request, response);
+            }
+            else{
+                response.sendError(404);
+            }
+        }
+        else{
+            request.getRequestDispatcher("views/errors/routeNotFound.jsp").forward(request, response);
         }
     }
 
@@ -60,7 +72,11 @@ public class FrontServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (DatabaseFileException ex) {
+            Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -74,7 +90,11 @@ public class FrontServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (DatabaseFileException ex) {
+            Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
