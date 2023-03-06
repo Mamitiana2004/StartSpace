@@ -43,6 +43,7 @@ public class FrontServlet extends HttpServlet {
             out.println("<title>Servlet FrontServlet</title>");            
             out.println("</head>");
             out.println("<body>");
+            out.println(URLHelper.retrieveUrl(request.getRequestURI()));
             out.println("</body>");
             out.println("</html>");
         }

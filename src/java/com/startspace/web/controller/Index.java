@@ -49,14 +49,14 @@ public class Index extends HttpServlet {
         if(file.exists() && !find){
             defaultRoute=FileConfig.get(file, "default");
             if(!defaultRoute.equalsIgnoreCase("404")){
-                request.getRequestDispatcher("views/"+defaultRoute+".jsp").forward(request, response);
+                request.getRequestDispatcher("views/"+defaultRoute+".starligth").forward(request, response);
             }
             else{
                 response.sendError(404);
             }
         }
         else{
-            request.getRequestDispatcher("views/errors/routeNotFound.jsp").forward(request, response);
+            request.getRequestDispatcher("views/errors/routeNotFound.starligth").forward(request, response);
         }
     }
 
